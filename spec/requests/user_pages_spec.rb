@@ -58,4 +58,32 @@ describe "User pages" do
     it { should have_selector('title', text: user.name) }
   end
 
+  describe "edit" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { visit edit_user_path(user) }
+
+    describe "page" do
+      it { should have_selector('h1',    text: "Update your profile") }
+      it { should have_selector('title', text: "Edit user") }
+      it { should have_link('change', href: 'http://gravatar.com/emails') }
+    end
+
+    describe "with invalid information" do
+      before { click_button "Save changes" }
+
+      it { should have_content('error') }
+    end
+
+    describe "with valid information" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sing_in user }
+
+      it { should have_selector('title', text: user.name) }
+      it { should have_link('Profile',  href: user_path(user)) }
+      it { should have_link('Settings', href: edit_user_path(user)) }
+      it { should have_link('Sign out', href: signout_path) }
+      it { should_not have_link('Sign in', href: signin_path) }
+    end
+  end
+
 end
